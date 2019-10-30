@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      height="200"
+      width="500"
+      style="border: 1px solid black"
+    >
+    </canvas>
+    <br />
+
+    <script type="text/javascript">
+      let ws = new WebSocket('ws://192.168.1.223:8888/');
+      
+      const realHeight = 1023, scaledHeight = 200, realWidth = 500, scaledWidth = 99;
+      let xCoord, yCoord;
+      
+      let canvas = document.getElementById("canvas");
+      let ctx = canvas.getContext("2d");
+      
+      let coords = new Array(100).fill(0);
+      
+      ws.onmessage = (event) =>{
+          let data = JSON.parse(event.data);
+        
+          coords.shift();
+          coords.push([parseInt(data.valuePot1), parseInt(data.valuePot2)]);
+          
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawGraph("red", 0);
+          drawGraph("blue", 1);
+      }
+    
+      const drawGraph = (strokeStyle, pot) => {
+        
+        ctx.strokeStyle = strokeStyle;
+        ctx.beginPath();
+        
+        for(let i = 0; i < coords.length; i++){
+            //set the x and y coords
+            xCoord = i * realWidth / scaledWidth;
+            
+            yCoord = scaledHeight - coords[i][pot] * scaledHeight / realHeight;
+            ctx.lineTo(xCoord, yCoord);    
+        }
+        ctx.stroke();
+      }
+    </script>
+  </body>
+</html>
