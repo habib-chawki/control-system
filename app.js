@@ -40,13 +40,13 @@ const maxRightTurn = 875,
 
 board.on("ready", () => {
   board.analogRead(0, value => {
-    error = values.valuePot1 - values.valuePot2;
+    error = values.desiredValue - values.actualValue;
 
     //control DC motor speed
     inputToHBridge = Math.abs(error) * factor;
     dcMotorSpeed = inputToHBridge > 255 ? 255 : inputToHBridge;
 
-    console.log("motor speed: " + dcMotorSpeed + " pot: " + values.valuePot2);
+    console.log("motor speed: " + dcMotorSpeed + " pot: " + values.actualValue);
 
     board.analogWrite(3, dcMotorSpeed);
 
@@ -62,12 +62,12 @@ board.on("ready", () => {
     //set the new pivot
     //pivot = value;
 
-    values.valuePot1 = value;
+    values.desiredValue = value;
     sendValue(JSON.stringify(values));
   });
 
   board.analogRead(1, value => {
-    values.valuePot2 = value;
+    values.actualValue = value;
     sendValue(JSON.stringify(values));
   });
 });
